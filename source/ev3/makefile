@@ -31,11 +31,14 @@ LINK = ar
 endif
 
 # -- build on EV3 BRICK
-ifeq ($(PLATFORM),__UNIX__)
-EV3 = $(if $(shell $(CC) -dM -E - < /dev/null | grep __ARM_ARCH_4T__),1,0)
-else
-EV3 = 0
-endif
+#ifeq ($(PLATFORM),__UNIX__)
+#EV3 = $(if $(shell $(CC) -dM -E - < /dev/null | grep __ARM_ARCH_4T__),1,0)
+#else
+#EV3 = 0
+#endif
+
+# -- let's pretend we are EV3 brick
+EV3 = 1
 
 # -- yupp preprocessor
 YUPP_HOME = $(TOP)/yupp

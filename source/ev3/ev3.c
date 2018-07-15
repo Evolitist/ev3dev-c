@@ -21,9 +21,6 @@
  *  \{
  */
 
-// EV3 BRICK /////////////////////////////////////
-#ifdef __ARM_ARCH_4T__
-
 #include <sys/types.h>
 #include <dirent.h>
 #include <unistd.h>
@@ -128,81 +125,6 @@ bool ev3_poweroff( void )
 	system( "shutdown -h now" );
 	return ( true );
 }
-
-// CLIENT ////////////////////////////////////////
-#else
-
-#include "ev3_link.h"
-
-// WIN32 /////////////////////////////////////////
-#ifdef __WIN32__
-
-#include <windows.h>
-
-// UNIX //////////////////////////////////////////
-#else
-
-#include <unistd.h>
-#define Sleep( msec ) usleep(( msec ) * 1000 )
-
-//////////////////////////////////////////////////
-#endif
-
-#define BRICK_WAIT_DELAY  1000  /* msec */
-#define BRICK_WAIT_TRIES  10
-
-int ev3_init( void )
-{
-	int i;
-
-	if ( udp_ev3_open( ev3_brick_addr, ev3_brick_port ) == EOF ) return ( -1 );
-
-	if ( ev3_brick_addr == NULL ) {
-		for ( i = 0; i < BRICK_WAIT_TRIES; i++ ) {
-			if ( udp_ev3_catch_address()) return ( 1 );
-			Sleep( BRICK_WAIT_DELAY );
-		}
-	}
-	return ( 0 );
-}
-
-void ev3_uninit( void )
-{
-	udp_ev3_close();
-}
-
-size_t ev3_write_binary( const char *fn, char *data, size_t sz )
-{
-	return udp_ev3_write(( char *) fn, data, sz );
-}
-
-size_t ev3_multi_write_binary( uint8_t *sn, uint16_t pos, const char *fn, char *data, size_t sz )
-{
-	return udp_ev3_multi_write( sn, pos, ( char *) fn, data, sz );
-}
-
-size_t ev3_read_binary( const char *fn, char *buf, size_t sz )
-{
-	return udp_ev3_read(( char *) fn, buf, sz );
-}
-
-size_t ev3_read_keys( uint8_t *buf )
-{
-	return udp_ev3_read_keys( buf );
-}
-
-static size_t __ev3_listdir( char *fn, char *buf, size_t sz )
-{
-	return udp_ev3_listdir( fn, buf, sz );
-}
-
-bool ev3_poweroff( void )
-{
-	return udp_ev3_poweroff();
-}
-
-//////////////////////////////////////////////////
-#endif
 
 size_t ev3_write( const char *fn, char *value )
 {
