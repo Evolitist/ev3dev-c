@@ -226,8 +226,8 @@ define final
 endef
 
 # -- removal list
-R_BIN = $(F_BIN) $(F_BIN_SHARED) $(O)
-R = $(R_BIN)
+R_BIN = $(F_BIN) $(F_BIN_SHARED) $(O) $(TOP)/release.zip
+R = $(R_BIN) $(TOP)/include
 
 ifeq ($(SKIP_PP),0)
 R := $(R) $(G_H) $(G_C) $(G_CXX)
@@ -249,6 +249,13 @@ define install
 	cp -f $1 $(D_INSTALL)/lib
 	${MKDIR} $(D_INSTALL)/include
 	cp -f $(S_INSTALL_H) $(D_INSTALL)/include
+endef
+
+# -- prepare library release
+define release
+	${MKDIR} $(TOP)/include
+	cp -f $(S_INSTALL_H) $(TOP)/include
+	zip -r $(TOP)/release.zip $(TOP)/lib $(TOP)/include
 endef
 
 # ---------------------------------
@@ -332,5 +339,11 @@ install:
 shared-install:
 	$(call install,$(F_BIN_SHARED))
 	ldconfig
+
+.PHONY: release
+
+release:
+	$(call release)
+	@echo "*** $(TOP)/release.zip ***"
 
 # -- EOF
