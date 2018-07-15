@@ -43,9 +43,9 @@ YUPP_HOME = $(TOP)/yupp
 # -- perform preprocessing anywhere
 # SKIP_PP = 0
 # -- skip preprocessing on the EV3 brick (it's a bit slow), would be better to use pre-generated sources
-SKIP_PP = $(EV3)
+# SKIP_PP = $(EV3)
 # -- skip preprocessing anywhere
-# SKIP_PP = 1
+SKIP_PP = 1
 
 ifeq ($(SKIP_PP),0)
 PP = python -u $(YUPP_HOME)/yup.py
