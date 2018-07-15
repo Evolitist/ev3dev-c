@@ -1,10 +1,18 @@
 language: c
-
 addons:
   apt:
     packages:
     - gcc-multilib
     - libc6-dev-armel-cross
     - gcc-arm-linux-gnueabi
-
-script: cd source/ev3 && make && make shared
+    - zip
+script: cd source/ev3 && make && make shared && make release
+deploy:
+  provider: releases
+  api_key:
+    secure: YouPWoA5Z/ZDT4VlTGidjd6pGUGscQUr4vzR866ETaGLbZrMs64ZXz/92SjilW1zmENTOHKBGqreL4cUL2sTr01edc3esQ+N2gAX57l3LsZ2dusiMArpbtwT4AwOXN7T26myMBIMG7pD0faDYqpWcW8nSpoN3aUXicVR++qziobYNsX83vSvivxTDgMuKZn6zYXMvp2KSiGP2/k2tnqErQDICI67yqW2M3MMy52CxoPSeAraAJkSsH7WW0sGZlpRU5/C4KD2O1w1HfFM8ul4Jx4yPh2C5LpXSTY1ZhaY39+0iFJNHXNsWbe9CRRYMSeney4eb1SYyw7gBFPXnuIT+iSCYrJA6TddwEI/VfCqpze8/nguW/LEoIfHttTAEPW+yedpnKu89YGrTjWJ6bZsXRa1biO0jF6hmnQxHFP0Ep7gGrkxlm4seukvUpIn6m4HcquOIP6453zTFp/mDznYADvnwwJtTepyFsA02wy3P50ra7X9NfvgaGp7ydZCuLf1Mi9Gns/smwMvoo5jjg52lCMj2IoleabYB6gS9rtn/Owjatd8LDSAwY6uD+gH0//tedQUR+Ye5c8nWVbs3r08pnYNz9bhHTwdnyco8MSeOQ4WwizkMu2C08nu/pRlBnwEVImT0iX+0DxPF/P6kEvr9E9q3Ec1daWK9KpPWLdhc7o=
+  file: release.zip
+  skip_cleanup: true
+  on:
+    repo: Evolitist/ev3dev-c
+    tags: true
