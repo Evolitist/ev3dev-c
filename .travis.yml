@@ -1,0 +1,10 @@
+language: c
+
+addons:
+  apt:
+    packages:
+    - gcc-multilib
+    - libc6-dev-armel-cross
+    - gcc-arm-linux-gnueabi
+
+script: cd source/ev3 && make && make shared
