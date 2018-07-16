@@ -6,7 +6,7 @@ addons:
     - libc6-dev-armel-cross
     - gcc-arm-linux-gnueabi
     - zip
-script: cd source/ev3 && make && make shared && make release
+script: cd source/ev3 && make && make shared && make release && cd ../..
 deploy:
   provider: releases
   api_key:
