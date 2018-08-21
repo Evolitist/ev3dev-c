@@ -371,11 +371,19 @@ int ev3_port_init( void )
 #define M_PREF_LEN  1
 #define WEDO_PREF_LEN  4
 
+#define EV3_PORTS_LEN 9
+
 void ev3_parse_port_name( char *name, uint8_t *port, uint8_t *extport, uint8_t *addr )
 {
 	*port = EV3_PORT__NONE_;
 	*extport = EXT_PORT__NONE_;
 	*addr = 0;
+
+	if (strncmp(name, "ev3-ports", EV3_PORTS_LEN) == 0) {
+		char delim[2] = ":";
+		char *tmp = strtok(name, delim);
+		name = strtok(NULL, delim);
+	}
 
 	if ( strncmp( name, "in", IN_PREF_LEN ) == 0 ) {
 		/* "in" */
