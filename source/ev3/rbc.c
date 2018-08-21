@@ -26,7 +26,6 @@ task exitWatcher()
 
 void init()
 {
-	ev3_init();
 	ev3_sensor_init();
 	ev3_tacho_init();
 	ev3_tasks_init();
@@ -37,7 +36,6 @@ void init()
 void uninit()
 {
 	ev3_display_uninit();
-	ev3_uninit();
 }
 
 /* **** BUTTON **** */

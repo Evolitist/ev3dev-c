@@ -53,22 +53,6 @@
 extern "C" {
 #endif
 
-// CLIENT ////////////////////////////////////////
-#ifndef __ARM_ARCH_4T__
-
-/**
- *  \brief Predefined IP address of the EV3 brick.
- */
-EV3_VAR_INIT( char *ev3_brick_addr, NULL );
-
-/**
- *  \brief UDP port of the EV3 brick.
- */
-EV3_VAR_INIT( uint16_t ev3_brick_port, 8800 );
-
-//////////////////////////////////////////////////
-#endif
-
 #ifndef DEFINE_H
 typedef uint8_t byte;
 typedef uint32_t dword;
@@ -79,20 +63,6 @@ typedef uint8_t INX_T;
 typedef uint8_t FLAGS_T;
 
 #define STR_unknown_  "<unknown>"
-
-/**
- *  \brief Initialize the remote access and detect the EV3 brick.
- *  This function do nothing in the case of the local access.
- *  To disable the brick detection just specify IP address before the call of this function.
- *  \return 0 - the brick is NOT found or auto-detection is disabled; 1 - the brick is found;
- *  -1 - an error has occurred.
- */
-extern int ev3_init( void );
-
-/**
- *  \brief Uninitialize the remote access.
- */
-extern void ev3_uninit( void );
 
 /**
  *  \brief Write binary data into the specified file of the EV3 brick.

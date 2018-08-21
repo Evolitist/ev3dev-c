@@ -18,19 +18,8 @@
  *  \{
  */
 
-// WIN32 /////////////////////////////////////////
-#ifdef __WIN32__
-
-#include <windows.h>
-
-// UNIX //////////////////////////////////////////
-#else
-
 #include <unistd.h>
 #define Sleep( ms ) usleep(( ms ) * 1000 )
-
-//////////////////////////////////////////////////
-#endif
 
 POOL_T port_to_socket( uint8_t port )
 {
@@ -82,16 +71,10 @@ uint8_t socket_to_port( POOL_T sock )
 
 bool brick_init( void )
 {
-	if ( ev3_init() < 1 ) return ( false );
 	ev3_sensor_init();
 	ev3_tacho_init();
 	ev3_dc_init();
 	return ( true );
-}
-
-void brick_uninit( void )
-{
-	ev3_uninit();
 }
 
 uint8_t brick_keys( void )

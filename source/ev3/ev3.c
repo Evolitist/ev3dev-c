@@ -27,16 +27,6 @@
 #include <fcntl.h>
 #include <linux/input.h>
 
-int ev3_init( void )
-{
-	return ( 1 );
-}
-
-void ev3_uninit( void )
-{
-
-}
-
 size_t ev3_write_binary( const char *fn, char *data, size_t sz )
 {
 	FILE *f;
