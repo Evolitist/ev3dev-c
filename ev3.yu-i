@@ -78,20 +78,6 @@ ALLOC_OUTPUT_BUFFER( char *buf, 64 );
 
 ($extern-c-begin)
 
-// CLIENT ////////////////////////////////////////
-#if EV3_BRICK == 0
-
-%rename( brick_addr ) ev3_brick_addr;
-extern char *ev3_brick_addr;
-%rename( brick_port ) ev3_brick_port;
-extern uint16_t ev3_brick_port;
-
-//////////////////////////////////////////////////
-#endif
-
-extern int ev3_init( void );
-extern void ev3_uninit( void );
-
 extern size_t ev3_write_binary( const char *fn, char *STRING, size_t LENGTH );
 extern size_t ev3_write( const char *fn, char *value );
 extern size_t ev3_write_bool( const char *fn, bool value );

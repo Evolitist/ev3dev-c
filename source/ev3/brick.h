@@ -101,11 +101,6 @@ extern uint8_t socket_to_port( POOL_T sock );
 extern bool brick_init( void );
 
 /**
- *  \brief Uninitialize the EV3 brick.
- */
-extern void brick_uninit( void );
-
-/**
  *  \brief Read state of the EV3 brick's keys.
  *  \return State.
  */
