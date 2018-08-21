@@ -380,9 +380,7 @@ void ev3_parse_port_name( char *name, uint8_t *port, uint8_t *extport, uint8_t *
 	*addr = 0;
 
 	if (strncmp(name, "ev3-ports", EV3_PORTS_LEN) == 0) {
-		char delim[2] = ":";
-		char *tmp = strtok(name, delim);
-		name = strtok(NULL, delim);
+		name += EV3_PORTS_LEN + 1;
 	}
 
 	if ( strncmp( name, "in", IN_PREF_LEN ) == 0 ) {
