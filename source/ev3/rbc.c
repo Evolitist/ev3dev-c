@@ -3,7 +3,6 @@
 #include <stdlib.h>
 #include <time.h>
 
-bool reversed[4] = { false, false, false, false };
 bool checkBack = true;
 
 task exitWatcher()
@@ -129,14 +128,6 @@ double cosDegrees(int d)
 }*/
 
 /* **** MOTORS **** */
-/* ---- SYSTEM ---- */
-INX_T get_polarity(tMotor motor, bool rev)
-{
-	uint8_t motorInx = motor == motorA ? 0 : (motor == motorB ? 1 : (motor == motorC ? 2 : (motor == motorD ? 3 : -1)));
-	return reversed[motorInx] == rev ? TACHO_NORMAL : TACHO_INVERSED;
-}
-
-/* ----  USER  ---- */
 TBrakeModes getMotorBrakeMode(tMotor motor)
 {
 	uint8_t sn;
@@ -204,8 +195,8 @@ void moveMotorTarget(tMotor motor, int position, int8_t speed)
 	uint8_t sn;
 	if (ev3_search_tacho_plugged_in(motor, EXT_PORT__NONE_, &sn, 0))
 	{
-		set_tacho_position_sp(sn, sgn(position) * sgn(speed) * abs(position));
-		set_tacho_speed_sp(sn, abs(speed) * 10);
+		set_tacho_position_sp(sn, sgn(speed) * position);
+		set_tacho_speed_sp(sn, speed * 10);
 		set_tacho_command_inx(sn, TACHO_RUN_TO_REL_POS);
 	}
 }
@@ -234,8 +225,6 @@ void setMotorReversed(tMotor motor, bool rev)
 	if (ev3_search_tacho_plugged_in(motor, EXT_PORT__NONE_, &sn, 0))
 	{
 		set_tacho_polarity_inx(sn, rev ? TACHO_INVERSED : TACHO_NORMAL);
-		uint8_t motorInx = motor == motorA ? 0 : (motor == motorB ? 1 : (motor == motorC ? 2 : (motor == motorD ? 3 : -1)));
-		reversed[motorInx] = rev;
 	}
 }
 
@@ -244,8 +233,7 @@ void setMotorSpeed(tMotor motor, int8_t speed)
 	uint8_t sn;
 	if (ev3_search_tacho_plugged_in(motor, EXT_PORT__NONE_, &sn, 0))
 	{
-		set_tacho_speed_sp(sn,(speed) * 10);
-		set_tacho_polarity_inx(sn, speed < 0 ? TACHO_INVERSED : TACHO_NORMAL);
+		set_tacho_speed_sp(sn, speed * 10);
 		set_tacho_command_inx(sn, TACHO_RUN_FOREVER);
 	}
 }
@@ -258,10 +246,8 @@ void setMotorSync(tMotor motor1, tMotor motor2, int8_t turnRatio, int8_t speed)
 		int speed1 = speed * 10, speed2 = speed * 10;
 		if(turnRatio < 0) speed1 -= speed1 * abs(turnRatio) / 50;
 		if(turnRatio > 0) speed2 -= speed2 * abs(turnRatio) / 50;
-		set_tacho_polarity_inx(sn[0], get_polarity(motor1, speed1 < 0));
-		set_tacho_polarity_inx(sn[1], get_polarity(motor2, speed2 < 0));
-		set_tacho_speed_sp(sn[0], abs(speed1));
-		set_tacho_speed_sp(sn[1], abs(speed2));
+		set_tacho_speed_sp(sn[0], speed1);
+		set_tacho_speed_sp(sn[1], speed2);
 		multi_set_tacho_command_inx(sn, TACHO_RUN_FOREVER);
 	}
 }
@@ -274,8 +260,6 @@ void setMotorSyncEncoder(tMotor motor1, tMotor motor2, int8_t turnRatio, int enc
 		int speed1 = speed * 10, speed2 = speed * 10;
 		if(turnRatio < 0) speed1 -= speed1 * abs(turnRatio) / 50;
 		if(turnRatio > 0) speed2 -= speed2 * abs(turnRatio) / 50;
-		set_tacho_polarity_inx(sn[0], get_polarity(motor1, speed1 < 0));
-		set_tacho_polarity_inx(sn[1], get_polarity(motor2, speed2 < 0));
 		set_tacho_speed_sp(sn[0], speed1);
 		set_tacho_speed_sp(sn[1], speed2);
 		set_tacho_position_sp(sn[0], enc);
@@ -292,8 +276,6 @@ void setMotorSyncTime(tMotor motor1, tMotor motor2, int8_t turnRatio, int time_m
 		int speed1 = speed * 10, speed2 = speed * 10;
 		if(turnRatio < 0) speed1 -= speed1 * abs(turnRatio) / 50;
 		if(turnRatio > 0) speed2 -= speed2 * abs(turnRatio) / 50;
-		set_tacho_polarity_inx(sn[0], get_polarity(motor1, speed1 < 0));
-		set_tacho_polarity_inx(sn[1], get_polarity(motor2, speed2 < 0));
 		set_tacho_speed_sp(sn[0], speed1);
 		set_tacho_speed_sp(sn[1], speed2);
 		multi_set_tacho_time_sp(sn, time_ms);
@@ -307,7 +289,7 @@ void setMotorTarget(tMotor motor, int position, int8_t speed)
 	if (ev3_search_tacho_plugged_in(motor, EXT_PORT__NONE_, &sn, 0))
 	{
 		set_tacho_position_sp(sn, position);
-		set_tacho_speed_sp(sn, abs(speed) * 10);
+		set_tacho_speed_sp(sn, speed * 10);
 		set_tacho_command_inx(sn, TACHO_RUN_TO_ABS_POS);
 	}
 }
