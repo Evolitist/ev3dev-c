@@ -1,7 +1,6 @@
 #include "rbc.h"
 
 #include <stdlib.h>
-#include <math.h>
 #include <time.h>
 
 bool reversed[4] = { false, false, false, false };

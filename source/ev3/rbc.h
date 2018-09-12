@@ -6,6 +6,8 @@
 #include "ev3_tasks.h"
 #include "ev3_speaker.h"
 
+#include <math.h>
+
 typedef enum {
 	motorA = OUTPUT_A,
 	motorB = OUTPUT_B,
