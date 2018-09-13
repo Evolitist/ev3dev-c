@@ -70,6 +70,20 @@ void draw_char_at(int _sl, char toDraw)
 	}
 }
 
+void draw_big_char_at(int _sl, char toDraw)
+{
+	int sl = _sl;
+	char t = toDraw ^ 255, st;
+	while(t != 0)
+	{
+		st = (t & 1) * 255;
+		memset(fb_ptr + sl, st, 8);
+		memset(fb_ptr + sl + LCD_LINE_SIZE, st, 8);
+		sl += 8;
+		t = t >> 1;
+	}
+}
+
 void display_draw_text_line(uint8_t line, const char *__str, ...)
 {
 	if(line >= 8) return;
@@ -105,6 +119,42 @@ void display_draw_text_line(uint8_t line, const char *__str, ...)
 	}
 }
 
+void display_draw_big_text_line(uint8_t line, const char *__str, ...)
+{
+	if(line >= 7) return;
+	char _str[23];
+	va_list vl;
+	va_start(vl, __str);
+	vsnprintf(_str, 22, __str, vl);
+	va_end(vl);
+	wchar_t str[12];
+	mbstowcs(str, _str, 11);
+	int sl = line * 16 * LCD_LINE_SIZE;
+	bool wipe;
+	for(int i = 0; i < 16; i+=2)
+	{
+		wipe = false;
+		for(int j = 0; j < 11; j++)
+		{
+			if(str[j] == 0) wipe = true;
+			if(wipe)
+			{
+				memset(fb_ptr + sl, 255, LCD_LINE_SIZE - (sl % LCD_LINE_SIZE));
+				memset(fb_ptr + sl + LCD_LINE_SIZE, 255, LCD_LINE_SIZE - (sl % LCD_LINE_SIZE));
+				break;
+			}
+			else
+			{
+				draw_big_char_at(sl, get_char((int)str[j])[i]);
+				sl += 64;
+				//memset(fb_ptr + sl, get_char((int)str[j])[i], 1);
+			}
+			//sl += 32;
+		}
+		sl += LCD_LINE_SIZE - (sl % LCD_LINE_SIZE) + LCD_LINE_SIZE;
+	}
+}
+
 void display_draw_centered_text_line(uint8_t line, const char *__str, ...)
 {
 	if(line >= 8) return;
@@ -134,6 +184,40 @@ void display_draw_centered_text_line(uint8_t line, const char *__str, ...)
 		memset(fb_ptr + sp + wsl * 32, 255, LCD_LINE_SIZE - ((sp + wsl * 32) % LCD_LINE_SIZE));
 		sl += LCD_LINE_SIZE;
 		sp += LCD_LINE_SIZE;
+	}
+}
+
+void display_draw_centered_big_text_line(uint8_t line, const char *__str, ...)
+{
+	if(line >= 7) return;
+	char _str[23];
+	va_list vl;
+	va_start(vl, __str);
+	vsnprintf(_str, 22, __str, vl);
+	va_end(vl);
+	wchar_t str[12];
+	mbstowcs(str, _str, 11);
+	int wsl = wcslen(str);
+	int sl = line * 16 * LCD_LINE_SIZE, sp = sl + ((11 - wsl) / 2 * 32);
+	if(wsl % 2 != 0)
+	{
+		str[wsl] = L' ';
+		str[wsl + 1] = 0;
+		wsl++;
+	}
+	for(int i = 0; i < 16; i++)
+	{
+		memset(fb_ptr + sl, 255, sp - sl);
+		memset(fb_ptr + sl + LCD_LINE_SIZE, 255, sp - sl);
+		//draw_char_at(sp, get_char((int)str[0])[i]);
+		for(int j = 0; j < wsl; j++)
+		{
+			draw_big_char_at(sp + j * 64, get_char((int)str[j])[i]);
+		}
+		memset(fb_ptr + sp + wsl * 64, 255, LCD_LINE_SIZE - ((sp + wsl * 32) % LCD_LINE_SIZE));
+		memset(fb_ptr + sp + wsl * 64 + LCD_LINE_SIZE, 255, LCD_LINE_SIZE - ((sp + wsl * 32) % LCD_LINE_SIZE));
+		sl += LCD_LINE_SIZE + LCD_LINE_SIZE;
+		sp += LCD_LINE_SIZE + LCD_LINE_SIZE;
 	}
 }
 
