@@ -33,6 +33,16 @@ void init()
 
 void uninit()
 {
+	uint8_t sn = 0;
+	while(sn < TACHO_DESC__LIMIT_)
+	{
+		if(ev3_tacho[sn].port != 0)
+		{
+			set_tacho_stop_action_inx(sn, TACHO_BRAKE);
+			set_tacho_command_inx(sn, TACHO_STOP);
+		}
+		++sn;
+	}
 	ev3_display_uninit();
 }
 
