@@ -26,6 +26,15 @@ void init()
 {
 	ev3_sensor_init();
 	ev3_tacho_init();
+	uint8_t sn = 0;
+	while(sn < TACHO_DESC__LIMIT_)
+	{
+		if(ev3_tacho[sn].port != 0)
+		{
+			set_tacho_stop_action_inx(sn, TACHO_BRAKE);
+		}
+		++sn;
+	}
 	ev3_tasks_init();
 	ev3_display_init();
 	startTask(exitWatcher);
