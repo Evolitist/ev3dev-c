@@ -15,7 +15,6 @@ task exitWatcher()
 			ev3_read_keys(&keys);
 			if(keys & 32)
 			{
-				ev3_display_uninit();
 				exit(130);
 			}
 		}
