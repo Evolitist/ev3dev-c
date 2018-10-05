@@ -372,6 +372,7 @@ int ev3_port_init( void )
 #define WEDO_PREF_LEN  4
 
 #define EV3_PORTS_LEN 9
+#define I2C_LEGOEV3_PREF_LEN 11
 
 void ev3_parse_port_name( char *name, uint8_t *port, uint8_t *extport, uint8_t *addr )
 {
@@ -389,63 +390,107 @@ void ev3_parse_port_name( char *name, uint8_t *port, uint8_t *extport, uint8_t *
 		*port = *name++;
 		if ( *name != ':' ) return;
 		++name;
-						
+
 		if ( strncmp( name, "i2c", I2C_PREF_LEN ) == 0 ) {
 			/* "i2c" */
 			name += I2C_PREF_LEN;
 			*addr = strtoul( name, &name, 0 );
 			if ( *name != ':' ) return;
 			++name;
-									
+
 			if ( strncmp( name, "mux", MUX_PREF_LEN ) == 0 ) {
 				/* "mux" */
 				name += MUX_PREF_LEN;
 				*extport = *name++;
 				if ( *name != ':' ) return;
 				++name;
-			
+
 				return;
-			}				
+			}
 			if ( strncmp( name, "sv", SV_PREF_LEN ) == 0 ) {
 				/* "sv" */
 				name += SV_PREF_LEN;
 				*extport = *name++ + SERVO__OFFSET_;
 				if ( *name != ':' ) return;
 				++name;
-			
+
 				return;
-			}				
+			}
 			if ( strncmp( name, "M", M_PREF_LEN ) == 0 ) {
 				/* "M" */
 				name += M_PREF_LEN;
 				*extport = *name++ + NXTMMX__OFFSET_;
 				if ( *name != ':' ) return;
 				++name;
-			
+
 				return;
-			}		
+			}
 			return;
-		}									
+		}
 		if ( strncmp( name, "wedo", WEDO_PREF_LEN ) == 0 ) {
 			/* "wedo" */
 			name += WEDO_PREF_LEN;
 			*extport = *name++ + WEDO__OFFSET_;
 			if ( *name != ':' ) return;
 			++name;
-			
+
 			return;
 		}
 		return;
-	}					
+	}
+	if ( strncmp( name, "i2c-legoev3", I2C_LEGOEV3_PREF_LEN ) == 0 ) {
+                /* "i2c-legoev3" */
+                name += I2C_LEGOEV3_PREF_LEN;
+                *port = *name++;
+                if ( *name != ':' ) return;
+                ++name;
+
+                if ( strncmp( name, "i2c", I2C_PREF_LEN ) == 0 ) {
+                        /* "i2c" */
+                        name += I2C_PREF_LEN;
+                        *addr = strtoul( name, &name, 0 );
+                        if ( *name != ':' ) return;
+                        ++name;
+
+			if ( strncmp( name, "mux", MUX_PREF_LEN ) == 0 ) {
+                                /* "mux" */
+                                name += MUX_PREF_LEN;
+                                *extport = *name++;
+                                if ( *name != ':' ) return;
+                                ++name;
+
+                                return;
+                        }
+                        if ( strncmp( name, "sv", SV_PREF_LEN ) == 0 ) {
+                                /* "sv" */
+                                name += SV_PREF_LEN;
+                                *extport = *name++ + SERVO__OFFSET_;
+                                if ( *name != ':' ) return;
+                                ++name;
+
+                                return;
+                        }
+                        if ( strncmp( name, "M", M_PREF_LEN ) == 0 ) {
+                                /* "M" */
+                                name += M_PREF_LEN;
+                                *extport = *name++ + NXTMMX__OFFSET_;
+                                if ( *name != ':' ) return;
+                                ++name;
+
+                                return;
+                        }
+                        return;
+		}
+	}
 	if ( strncmp( name, "out", OUT_PREF_LEN ) == 0 ) {
 		/* "out" */
 		name += OUT_PREF_LEN;
 		*port = *name++;
 		if ( *name != ':' ) return;
 		++name;
-			
+
 		return;
-	}										
+	}
 	return;
 }
 
