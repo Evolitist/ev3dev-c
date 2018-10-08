@@ -441,7 +441,8 @@ void ev3_parse_port_name( char *name, uint8_t *port, uint8_t *extport, uint8_t *
 	if ( strncmp( name, "i2c-legoev3", I2C_LEGOEV3_PREF_LEN ) == 0 ) {
                 /* "i2c-legoev3" */
                 name += I2C_LEGOEV3_PREF_LEN;
-                *port = *name++;
+                *port = *name - 2;
+		++name;
                 if ( *name != ':' ) return;
                 ++name;
 
