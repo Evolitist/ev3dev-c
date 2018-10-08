@@ -255,7 +255,7 @@ endef
 define release
 	${MKDIR} $(TOP)/include
 	cp -f $(S_INSTALL_H) $(TOP)/include
-	zip -r $(TOP)/release.zip $(TOP)/lib $(TOP)/include
+	cd $(TOP); zip -0 -r release.zip lib include
 endef
 
 # ---------------------------------
