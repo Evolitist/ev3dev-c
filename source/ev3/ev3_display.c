@@ -131,7 +131,7 @@ void display_draw_big_text_line(uint8_t line, const char *__str, ...)
 	mbstowcs(str, _str, 11);
 	int sl = line * 16 * LCD_LINE_SIZE;
 	bool wipe;
-	for(int i = 0; i < 16; i+=2)
+	for(int i = 0; i < 16; i++)
 	{
 		wipe = false;
 		for(int j = 0; j < 11; j++)
@@ -169,9 +169,7 @@ void display_draw_centered_text_line(uint8_t line, const char *__str, ...)
 	int sl = line * 16 * LCD_LINE_SIZE, sp = sl + ((22 - wsl) / 2 * 32);
 	if(wsl % 2 != 0)
 	{
-		str[wsl] = L' ';
-		str[wsl + 1] = 0;
-		wsl++;
+		sp += 16;
 	}
 	for(int i = 0; i < 16; i++)
 	{
@@ -198,12 +196,10 @@ void display_draw_centered_big_text_line(uint8_t line, const char *__str, ...)
 	wchar_t str[12];
 	mbstowcs(str, _str, 11);
 	int wsl = wcslen(str);
-	int sl = line * 16 * LCD_LINE_SIZE, sp = sl + ((11 - wsl) / 2 * 32);
+	int sl = line * 16 * LCD_LINE_SIZE, sp = sl + ((11 - wsl) / 2 * 64);
 	if(wsl % 2 != 0)
 	{
-		str[wsl] = L' ';
-		str[wsl + 1] = 0;
-		wsl++;
+		//sp += 32;
 	}
 	for(int i = 0; i < 16; i++)
 	{
@@ -241,6 +237,29 @@ void display_draw_string(uint8_t line, const char *__str, ...)
 			sl += 32;
 		}
 		sl += LCD_LINE_SIZE - (sl % LCD_LINE_SIZE);
+	}
+}
+
+void display_draw_big_string(uint8_t line, const char *__str, ...)
+{
+	if(line >= 7) return;
+	char _str[23];
+	va_list vl;
+	va_start(vl, __str);
+	vsnprintf(_str, 22, __str, vl);
+	va_end(vl);
+	wchar_t str[12];
+	mbstowcs(str, _str, 11);
+	int sl = line * 16 * LCD_LINE_SIZE;
+	for(int i = 0; i < 16; i+=2)
+	{
+		for(int j = 0; j < 11; j++)
+		{
+			if(str[j] == 0) break;
+			draw_big_char_at(sl, get_char((int)str[j])[i]);
+			sl += 64;
+		}
+		sl += LCD_LINE_SIZE - (sl % LCD_LINE_SIZE) + LCD_LINE_SIZE;
 	}
 }
 
