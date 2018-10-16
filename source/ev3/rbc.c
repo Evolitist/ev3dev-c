@@ -1,7 +1,11 @@
 #include "rbc.h"
 
+#include <stdarg.h>
+#include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <time.h>
+#include <wchar.h>
 
 bool checkBack = true;
 
@@ -993,18 +997,18 @@ void delay(unsigned long int ms)
 {
 	if(ms == 0) return;
 	struct timespec ts;
-    ts.tv_sec = ms / 1000;
-    ts.tv_nsec = (ms % 1000) * 1000000;
-    nanosleep(&ts, NULL);
+	ts.tv_sec = ms / 1000;
+	ts.tv_nsec = (ms % 1000) * 1000000;
+	nanosleep(&ts, NULL);
 }
 
 void delay_us(unsigned long int us)
 {
 	if(us == 0) return;
 	struct timespec ts;
-    ts.tv_sec = us / 1000000;
-    ts.tv_nsec = (us % 1000000) * 1000;
-    nanosleep(&ts, NULL);
+	ts.tv_sec = us / 1000000;
+	ts.tv_nsec = (us % 1000000) * 1000;
+	nanosleep(&ts, NULL);
 }
 
 void delay_ns(unsigned long int ns)
@@ -1012,6 +1016,70 @@ void delay_ns(unsigned long int ns)
 	if(ns == 0) return;
 	struct timespec ts;
 	ts.tv_sec = 0;
-    ts.tv_nsec = ns;
-    nanosleep(&ts, NULL);
+	ts.tv_nsec = ns;
+	nanosleep(&ts, NULL);
 }
+
+/* ***  LOGGING *** */
+#define ANSI_COLOR_RED     "\x1b[31m"
+#define ANSI_COLOR_GREEN   "\x1b[32m"
+#define ANSI_COLOR_YELLOW  "\x1b[33m"
+#define ANSI_COLOR_BLUE    "\x1b[34m"
+#define ANSI_COLOR_MAGENTA "\x1b[35m"
+#define ANSI_COLOR_CYAN    "\x1b[36m"
+#define ANSI_COLOR_RESET   "\x1b[0m"
+
+void print(tLogType type, const char *_str, ...)
+{
+	char str[512];
+	va_list vl;
+	va_start(vl, _str);
+	vsnprintf(str, 511, _str, vl);
+	va_end(vl);
+	char *tag;
+	switch(type) {
+		case DEBUG:
+			tag = "[DEBUG] ";
+			break;
+		case INFO:
+			tag = "[INFO]  ";
+			break;
+		case WARN:
+			tag = ANSI_COLOR_YELLOW "[WARN]  ";
+			break;
+		case ERROR:
+			tag = ANSI_COLOR_RED "[ERROR] " ;
+			break;
+	}
+	fprintf(type == ERROR ? stderr : stdout, "%s", tag);
+	vfprintf(type == ERROR ? stderr : stdout, str, vl);
+	fprintf(type == ERROR ? stderr : stdout, ANSI_COLOR_RESET);
+}
+
+void println(tLogType type, const char *_str, ...)
+{
+	char str[512];
+	va_list vl;
+	va_start(vl, _str);
+	vsnprintf(str, 511, _str, vl);
+	va_end(vl);
+	char *tag;
+	switch(type) {
+		case DEBUG:
+			tag = "[DEBUG] ";
+			break;
+		case INFO:
+			tag = "[INFO]  ";
+			break;
+		case WARN:
+			tag = ANSI_COLOR_YELLOW "[WARN]  ";
+			break;
+		case ERROR:
+			tag = ANSI_COLOR_RED "[ERROR] " ;
+			break;
+	}
+	fprintf(type == ERROR ? stderr : stdout, "%s", tag);
+	vfprintf(type == ERROR ? stderr : stdout, str, vl);
+	fprintf(type == ERROR ? stderr : stdout, ANSI_COLOR_RESET "\n");
+}
+

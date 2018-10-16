@@ -28,6 +28,13 @@ typedef enum TBrakeModes {
 	motorHold = TACHO_HOLD,
 } TBrakeModes;
 
+typedef enum {
+	DEBUG,
+	INFO,
+	WARN,
+	ERROR,
+} tLogType;
+
 void init() __attribute__((constructor));
 void uninit() __attribute__((destructor));
 
@@ -165,3 +172,9 @@ void stopTask(task (*task_func)(void*));
 void delay(unsigned long int ms);
 void delay_us(unsigned long int us);
 void delay_ns(unsigned long int ns);
+
+/*
+ * Logging
+ */
+void print(tLogType type, const char *__str, ...);
+void println(tLogType type, const char *__str, ...);
