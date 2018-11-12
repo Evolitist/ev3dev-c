@@ -49,6 +49,9 @@
 #define PATH_STOP_ACTIONS  "/sys/class/tacho-motor/motor" DESC_SPOT "stop_actions"
 #define PATH_TIME_SP  "/sys/class/tacho-motor/motor" DESC_SPOT "time_sp"
 
+#define PATH_POSITION_PRECISE "/sys/bus/iio/devices/iio:device1/in_count~_raw"
+#define PATH_SPEED_PRECISE    "/sys/bus/iio/devices/iio:device1/in_frequency~_raw"
+
 size_t get_tacho_address( uint8_t sn, char *buf, size_t sz )
 {
 	char s[] = PATH_ADDRESS;
@@ -723,6 +726,20 @@ size_t get_tacho_state_flags( uint8_t sn, FLAGS_T *flags )
 	if ( strstr( buf, "stalled" )) *flags |= TACHO_STALLED;
 
 	return ( result );
+}
+
+size_t get_tacho_position_precise( uint8_t sn, int *value )
+{
+        char s[] = PATH_POSITION_PRECISE;
+	s[41] = ev3_tacho[sn].port - OUTPUT_A + '0';
+        return ev3_read_int( s, value );
+}
+
+size_t get_tacho_speed_precise( uint8_t sn, int *value )
+{
+        char s[] = PATH_SPEED_PRECISE;
+        s[45] = ev3_tacho[sn].port - OUTPUT_A + '0';
+        return ev3_read_int( s, value );
 }
 
 int ev3_tacho_init( void )

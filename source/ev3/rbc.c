@@ -316,6 +316,28 @@ void setMotorTarget(tMotor motor, int position, int8_t speed)
 	}
 }
 
+int getMotorPreciseEncoder(tMotor motor)
+{
+	uint8_t sn;
+        int val = 0;
+        if (ev3_search_tacho_plugged_in(motor, EXT_PORT__NONE_, &sn, 0))
+        {
+                get_tacho_position_precise(sn, &val);
+        }
+        return val;
+}
+
+int getMotorPreciseSpeed(tMotor motor)
+{
+        uint8_t sn;
+        int val = 0;
+        if (ev3_search_tacho_plugged_in(motor, EXT_PORT__NONE_, &sn, 0))
+        {
+                get_tacho_speed_precise(sn, &val);
+        }
+        return val;
+}
+
 /* **** SENSOR **** */
 /* ---- SYSTEM ---- */
 

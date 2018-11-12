@@ -835,6 +835,10 @@ extern size_t multi_set_tacho_stop_action_inx( uint8_t *sn, INX_T stop_action_in
  */
 extern size_t get_tacho_state_flags( uint8_t sn, FLAGS_T *flags );
 
+extern size_t get_tacho_position_precise( uint8_t sn, int *value );
+
+extern size_t get_tacho_speed_precise( uint8_t sn, int *value );
+
 /**
  *  \brief Detect connected tachos.
  *  \return Number of found tachos or -1 in case of an error.

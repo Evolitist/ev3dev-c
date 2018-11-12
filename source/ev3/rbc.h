@@ -81,6 +81,8 @@ void setMotorSync(tMotor motor1, tMotor motor2, int8_t turnRatio, int8_t speed);
 void setMotorSyncEncoder(tMotor motor1, tMotor motor2, int8_t turnRatio, int enc, int8_t speed);
 void setMotorSyncTime(tMotor motor1, tMotor motor2, int8_t turnRatio, int time_ms, int8_t speed);
 void setMotorTarget(tMotor motor, int position, int8_t speed);
+int getMotorPreciseEncoder(tMotor motor);
+int getMotorPreciseSpeed(tMotor motor);
 
 
 
