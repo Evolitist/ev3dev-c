@@ -174,6 +174,7 @@ void stopTask(task (*task_func)(void*));
 void delay(unsigned long int ms);
 void delay_us(unsigned long int us);
 void delay_ns(unsigned long int ns);
+double sysTime();
 
 /*
  * Logging

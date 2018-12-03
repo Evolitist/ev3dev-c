@@ -1042,6 +1042,13 @@ void delay_ns(unsigned long int ns)
 	nanosleep(&ts, NULL);
 }
 
+double sysTime()
+{
+	struct timespec ts;
+	if (clock_gettime(CLOCK_REALTIME, &ts) == -1) return 0;
+	return (double)ts.tv_sec + ((double)ts.tv_nsec / 1000000000.0);
+}
+
 /* ***  LOGGING *** */
 #define ANSI_COLOR_RED     "\x1b[31m"
 #define ANSI_COLOR_GREEN   "\x1b[32m"
