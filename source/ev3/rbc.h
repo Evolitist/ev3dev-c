@@ -1,3 +1,6 @@
+#ifndef RBC_H
+#define RBC_H
+
 #include "ev3.h"
 #include "ev3_port.h"
 #include "ev3_sensor.h"
@@ -7,6 +10,10 @@
 #include "ev3_speaker.h"
 
 #include <math.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 typedef enum {
 	motorA = OUTPUT_A,
@@ -179,5 +186,12 @@ double sysTime();
 /*
  * Logging
  */
-void print(tLogType type, const char *__str, ...);
-void println(tLogType type, const char *__str, ...);
+void print(tLogType type, const char *__str, ...) __attribute__((format (printf, 2, 3)));
+void println(tLogType type, const char *__str, ...) __attribute__((format (printf, 2, 3)));
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif
+
