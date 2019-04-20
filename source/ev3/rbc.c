@@ -853,7 +853,7 @@ int getHTColor2Red(tSensor sensor)
 		{
 			set_sensor_mode_inx(sn, HT_NXT_COLOR_V2_ALL);
 		}
-		get_sensor_value1(sn, &val);
+		get_sensor_value0(sn, &val);
 	}
 	return (int)round(val);
 }
@@ -868,7 +868,7 @@ int getHTColor2Green(tSensor sensor)
 		{
 			set_sensor_mode_inx(sn, HT_NXT_COLOR_V2_ALL);
 		}
-		get_sensor_value2(sn, &val);
+		get_sensor_value1(sn, &val);
 	}
 	return (int)round(val);
 }
@@ -883,7 +883,7 @@ int getHTColor2Blue(tSensor sensor)
 		{
 			set_sensor_mode_inx(sn, HT_NXT_COLOR_V2_ALL);
 		}
-		get_sensor_value3(sn, &val);
+		get_sensor_value2(sn, &val);
 	}
 	return (int)round(val);
 }
@@ -898,9 +898,9 @@ void getHTColor2RGB(tSensor sensor, int *red, int *green, int *blue)
 		{
 			set_sensor_mode_inx(sn, HT_NXT_COLOR_V2_ALL);
 		}
-		get_sensor_value1(sn, &r);
-		get_sensor_value2(sn, &g);
-		get_sensor_value3(sn, &b);
+		get_sensor_value0(sn, &r);
+		get_sensor_value1(sn, &g);
+		get_sensor_value2(sn, &b);
 		*red = (int)round(r);
 		*green = (int)round(g);
 		*blue = (int)round(b);
