@@ -16,10 +16,10 @@ extern "C" {
 #endif
 
 typedef enum {
-	motorA = OUTPUT_A,
-	motorB = OUTPUT_B,
-	motorC = OUTPUT_C,
-	motorD = OUTPUT_D,
+	motorA = (uint8_t)0x1UL,
+	motorB = (uint8_t)0x2UL,
+	motorC = (uint8_t)0x4UL,
+	motorD = (uint8_t)0x8UL,
 } tMotor;
 
 typedef enum {
@@ -76,18 +76,19 @@ double cosDegrees(int d);
  */
 TBrakeModes getMotorBrakeMode(tMotor motor);
 int getMotorEncoder(tMotor motor);
+float getMotorEncoderAverage(tMotor motors);
 float getMotorRPM(tMotor motor);
-bool getMotorRunning(tMotor motor);
+bool getMotorRunning(tMotor motors);
 int getMotorTarget(tMotor motor);
-void moveMotorTarget(tMotor motor, int position, int8_t speed);
-void resetMotorEncoder(tMotor motor);
-void setMotorBrakeMode(tMotor motor, TBrakeModes brakeMode);
-void setMotorReversed(tMotor motor, bool rev);
-void setMotorSpeed(tMotor motor, int8_t speed);
-void setMotorSync(tMotor motor1, tMotor motor2, int8_t turnRatio, int8_t speed);
-void setMotorSyncEncoder(tMotor motor1, tMotor motor2, int8_t turnRatio, int enc, int8_t speed);
-void setMotorSyncTime(tMotor motor1, tMotor motor2, int8_t turnRatio, int time_ms, int8_t speed);
-void setMotorTarget(tMotor motor, int position, int8_t speed);
+void moveMotorTarget(tMotor motors, int position, int8_t speed);
+void resetMotorEncoder(tMotor motors);
+void setMotorBrakeMode(tMotor motors, TBrakeModes brakeMode);
+void setMotorReversed(tMotor motors, bool rev);
+void setMotorSpeed(tMotor motors, int8_t speed);
+void setMotorSync(tMotor motors, int8_t turnRatio, int8_t speed);
+void setMotorSyncEncoder(tMotor motors, int8_t turnRatio, int enc, int8_t speed);
+void setMotorSyncTime(tMotor motors, int8_t turnRatio, int time_ms, int8_t speed);
+void setMotorTarget(tMotor motors, int position, int8_t speed);
 int getMotorPreciseEncoder(tMotor motor);
 int getMotorPreciseSpeed(tMotor motor);
 

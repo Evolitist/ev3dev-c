@@ -58,6 +58,46 @@ void uninit()
 	ev3_display_uninit();
 }
 
+uint8_t multiOutToOutPtr(tMotor mOut, uint8_t *sn)
+{
+	uint8_t _sn, res = 0;
+
+	memset(sn, DESC_LIMIT, DESC_VEC_LEN);
+	for (_sn = 0; _sn < DESC_LIMIT; _sn++)
+	{
+		if (ev3_tacho[_sn].type_inx != TACHO_TYPE__NONE_)
+		{
+			uint8_t sock = 0UL;
+			switch(ev3_tacho[_sn].port)
+			{
+				case OUTPUT_A:
+					sock = motorA;
+					break;
+				case OUTPUT_B:
+					sock = motorB;
+					break;
+				case OUTPUT_C:
+					sock = motorC;
+					break;
+				case OUTPUT_D:
+					sock = motorD;
+					break;
+			}
+			if (sock & mOut)
+			{
+				++res;
+				*sn = _sn;
+				++sn;
+				mOut &= ~sock;
+				if (mOut == 0) {
+					return res;
+				}
+			}
+		}
+	}
+	return res;
+}
+
 /* **** BUTTON **** */
 int getButtonPress()
 {
@@ -170,100 +210,138 @@ TBrakeModes getMotorBrakeMode(tMotor motor)
 
 int getMotorEncoder(tMotor motor)
 {
-	uint8_t sn;
 	int val = 0;
-	if (ev3_search_tacho_plugged_in(motor, EXT_PORT__NONE_, &sn, 0))
+	uint8_t sn[DESC_VEC_LEN];
+	if (multiOutToOutPtr(motor, sn) == 1)
 	{
-		get_tacho_position(sn, &val);
+		get_tacho_position(*sn, &val);
+	}
+	return val;
+}
+
+float getMotorEncoderAverage(tMotor motors)
+{
+	uint8_t sn[DESC_VEC_LEN];
+	float val = 0.0F;
+	uint8_t cnt = multiOutToOutPtr(motors, sn);
+	if (cnt == 1)
+	{
+		int intval = 0;
+		get_tacho_position(*sn, &intval);
+		val = (float)intval;
+	}
+	else if (cnt > 1)
+	{
+		uint8_t i = 0;
+		while (sn[i] != DESC_LIMIT && i < DESC_VEC_LEN)
+		{
+			int intval = 0;
+			get_tacho_position(sn[i], &intval);
+			val += (float)intval;
+			++i;
+		}
+		val = val / (float)cnt;
 	}
 	return val;
 }
 
 float getMotorRPM(tMotor motor)
 {
-	uint8_t sn;
 	int val = 0;
-	if (ev3_search_tacho_plugged_in(motor, EXT_PORT__NONE_, &sn, 0))
+	uint8_t sn[DESC_VEC_LEN];
+	if (multiOutToOutPtr(motor, sn) == 1)
 	{
-		get_tacho_speed(sn, &val);
+		get_tacho_speed(*sn, &val);
 	}
 	return (float)val / (float)360;
 }
 
-bool getMotorRunning(tMotor motor)
+bool getMotorRunning(tMotor motors)
 {
-	uint8_t sn;
+	uint8_t sn[DESC_VEC_LEN];
 	FLAGS_T flags = TACHO_STATE__NONE_;
-	if (ev3_search_tacho_plugged_in(motor, EXT_PORT__NONE_, &sn, 0))
+	uint8_t cnt = multiOutToOutPtr(motors, sn);
+	if (cnt == 1)
 	{
-		get_tacho_state_flags(sn, &flags);
+		get_tacho_state_flags(*sn, &flags);
+	}
+	else if (cnt > 1)
+	{
+		uint8_t i = 0;
+		while (sn[i] != DESC_LIMIT && i < DESC_VEC_LEN)
+		{
+			FLAGS_T nf = TACHO_STATE__NONE_;
+			get_tacho_state_flags(sn[i], &nf);
+			flags |= nf;
+			++i;
+		}
 	}
 	return flags != TACHO_STATE__NONE_;
 }
 
 int getMotorTarget(tMotor motor)
 {
-	uint8_t sn;
 	int val = 0;
-	if (ev3_search_tacho_plugged_in(motor, EXT_PORT__NONE_, &sn, 0))
+	uint8_t sn[DESC_VEC_LEN];
+	if (multiOutToOutPtr(motor, sn) == 1)
 	{
-		get_tacho_position_sp(sn, &val);
+		get_tacho_position_sp(*sn, &val);
 	}
 	return val;
 }
 
-void moveMotorTarget(tMotor motor, int position, int8_t speed)
+void moveMotorTarget(tMotor motors, int position, int8_t speed)
 {
-	uint8_t sn;
-	if (ev3_search_tacho_plugged_in(motor, EXT_PORT__NONE_, &sn, 0))
+	uint8_t sn[DESC_VEC_LEN];
+	if (multiOutToOutPtr(motors, sn))
 	{
-		set_tacho_position_sp(sn, sgn(speed) * position);
-		set_tacho_speed_sp(sn, speed * 10);
-		set_tacho_command_inx(sn, TACHO_RUN_TO_REL_POS);
+		multi_set_tacho_position_sp(sn, sgn(speed) * position);
+		multi_set_tacho_speed_sp(sn, speed * 10);
+		multi_set_tacho_command_inx(sn, TACHO_RUN_TO_REL_POS);
 	}
 }
 
-void resetMotorEncoder(tMotor motor)
+void resetMotorEncoder(tMotor motors)
 {
-	uint8_t sn;
-	if (ev3_search_tacho_plugged_in(motor, EXT_PORT__NONE_, &sn, 0))
+	uint8_t sn[DESC_VEC_LEN];
+	if (multiOutToOutPtr(motors, sn))
 	{
-		set_tacho_position(sn, 0);
+		multi_set_tacho_position(sn, 0);
 	}
 }
 
-void setMotorBrakeMode(tMotor motor, TBrakeModes brakeMode)
+void setMotorBrakeMode(tMotor motors, TBrakeModes brakeMode)
 {
-	uint8_t sn;
-	if (ev3_search_tacho_plugged_in(motor, EXT_PORT__NONE_, &sn, 0))
+	uint8_t sn[DESC_VEC_LEN];
+	if (multiOutToOutPtr(motors, sn))
 	{
-		set_tacho_stop_action_inx(sn, brakeMode);
+		multi_set_tacho_stop_action_inx(sn, brakeMode);
 	}
 }
 
-void setMotorReversed(tMotor motor, bool rev)
+void setMotorReversed(tMotor motors, bool rev)
 {
-	uint8_t sn;
-	if (ev3_search_tacho_plugged_in(motor, EXT_PORT__NONE_, &sn, 0))
+	uint8_t sn[DESC_VEC_LEN];
+	if (multiOutToOutPtr(motors, sn))
 	{
-		set_tacho_polarity_inx(sn, rev ? TACHO_INVERSED : TACHO_NORMAL);
+		multi_set_tacho_polarity_inx(sn, rev ? TACHO_INVERSED : TACHO_NORMAL);
 	}
 }
 
-void setMotorSpeed(tMotor motor, int8_t speed)
+void setMotorSpeed(tMotor motors, int8_t speed)
 {
-	uint8_t sn;
-	if (ev3_search_tacho_plugged_in(motor, EXT_PORT__NONE_, &sn, 0))
+	uint8_t sn[DESC_VEC_LEN];
+	if (multiOutToOutPtr(motors, sn))
 	{
-		set_tacho_speed_sp(sn, speed * 10);
-		set_tacho_command_inx(sn, TACHO_RUN_FOREVER);
+		multi_set_tacho_speed_sp(sn, speed * 10);
+		multi_set_tacho_command_inx(sn, TACHO_RUN_FOREVER);
 	}
 }
 
-void setMotorSync(tMotor motor1, tMotor motor2, int8_t turnRatio, int8_t speed)
+void setMotorSync(tMotor motors, int8_t turnRatio, int8_t speed)
 {
-	uint8_t sn[3] = { DESC_LIMIT, DESC_LIMIT, DESC_LIMIT };
-	if (ev3_search_tacho_plugged_in(motor1, EXT_PORT__NONE_, &sn[0], 0) && ev3_search_tacho_plugged_in(motor2, EXT_PORT__NONE_, &sn[1], 0))
+	uint8_t sn[DESC_VEC_LEN];
+	if (multiOutToOutPtr(motors, sn) == 2)
 	{
 		int speed1 = speed * 10, speed2 = speed * 10;
 		if(turnRatio < 0) speed1 -= speed1 * abs(turnRatio) / 50;
@@ -274,10 +352,10 @@ void setMotorSync(tMotor motor1, tMotor motor2, int8_t turnRatio, int8_t speed)
 	}
 }
 
-void setMotorSyncEncoder(tMotor motor1, tMotor motor2, int8_t turnRatio, int enc, int8_t speed)
+void setMotorSyncEncoder(tMotor motors, int8_t turnRatio, int enc, int8_t speed)
 {
-	uint8_t sn[3] = { DESC_LIMIT, DESC_LIMIT, DESC_LIMIT };
-	if (ev3_search_tacho_plugged_in(motor1, EXT_PORT__NONE_, &sn[0], 0) && ev3_search_tacho_plugged_in(motor2, EXT_PORT__NONE_, &sn[1], 0))
+	uint8_t sn[DESC_VEC_LEN];
+	if (multiOutToOutPtr(motors, sn) == 2)
 	{
 		int speed1 = speed * 10, speed2 = speed * 10;
 		if(turnRatio < 0) speed1 -= speed1 * abs(turnRatio) / 50;
@@ -290,10 +368,10 @@ void setMotorSyncEncoder(tMotor motor1, tMotor motor2, int8_t turnRatio, int enc
 	}
 }
 
-void setMotorSyncTime(tMotor motor1, tMotor motor2, int8_t turnRatio, int time_ms, int8_t speed)
+void setMotorSyncTime(tMotor motors, int8_t turnRatio, int time_ms, int8_t speed)
 {
-	uint8_t sn[3] = { DESC_LIMIT, DESC_LIMIT, DESC_LIMIT };
-	if (ev3_search_tacho_plugged_in(motor1, EXT_PORT__NONE_, &sn[0], 0) && ev3_search_tacho_plugged_in(motor2, EXT_PORT__NONE_, &sn[1], 0))
+	uint8_t sn[DESC_VEC_LEN];
+	if (multiOutToOutPtr(motors, sn) == 2)
 	{
 		int speed1 = speed * 10, speed2 = speed * 10;
 		if(turnRatio < 0) speed1 -= speed1 * abs(turnRatio) / 50;
@@ -307,35 +385,35 @@ void setMotorSyncTime(tMotor motor1, tMotor motor2, int8_t turnRatio, int time_m
 
 void setMotorTarget(tMotor motor, int position, int8_t speed)
 {
-	uint8_t sn;
-	if (ev3_search_tacho_plugged_in(motor, EXT_PORT__NONE_, &sn, 0))
+	uint8_t sn[DESC_VEC_LEN];
+	if (multiOutToOutPtr(motor, sn))
 	{
-		set_tacho_position_sp(sn, position);
-		set_tacho_speed_sp(sn, speed * 10);
-		set_tacho_command_inx(sn, TACHO_RUN_TO_ABS_POS);
+		multi_set_tacho_position_sp(sn, position);
+		multi_set_tacho_speed_sp(sn, speed * 10);
+		multi_set_tacho_command_inx(sn, TACHO_RUN_TO_ABS_POS);
 	}
 }
 
 int getMotorPreciseEncoder(tMotor motor)
 {
-	uint8_t sn;
-        int val = 0;
-        if (ev3_search_tacho_plugged_in(motor, EXT_PORT__NONE_, &sn, 0))
-        {
-                get_tacho_position_precise(sn, &val);
-        }
-        return val;
+	int val = 0;
+	uint8_t sn[DESC_VEC_LEN];
+	if (multiOutToOutPtr(motor, sn) == 1)
+	{
+		get_tacho_position_precise(*sn, &val);
+	}
+	return val;
 }
 
 int getMotorPreciseSpeed(tMotor motor)
 {
-        uint8_t sn;
-        int val = 0;
-        if (ev3_search_tacho_plugged_in(motor, EXT_PORT__NONE_, &sn, 0))
-        {
-                get_tacho_speed_precise(sn, &val);
-        }
-        return val;
+	int val = 0;
+	uint8_t sn[DESC_VEC_LEN];
+	if (multiOutToOutPtr(motor, sn) == 1)
+	{
+		get_tacho_speed_precise(*sn, &val);
+	}
+	return val;
 }
 
 /* **** SENSOR **** */
