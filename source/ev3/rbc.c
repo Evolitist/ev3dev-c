@@ -99,11 +99,11 @@ uint8_t multiOutToOutPtr(tMotor mOut, uint8_t *sn)
 }
 
 /* **** BUTTON **** */
-int getButtonPress()
+int getButtonPress(tButton button)
 {
 	uint8_t keys = 0;
 	ev3_read_keys(&keys);
-	return keys;
+	return ((keys & button) == button);
 }
 
 void waitForButtonPress()

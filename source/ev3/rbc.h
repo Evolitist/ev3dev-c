@@ -16,6 +16,16 @@ extern "C" {
 #endif
 
 typedef enum {
+	buttonNone = 0;
+	buttonUp = EV3_KEY_UP;
+	buttonDown = EV3_KEY_DOWN;
+	buttonLeft = EV3_KEY_LEFT;
+	buttonRight = EV3_KEY_RIGHT;
+	buttonEnter = EV3_KEY_CENTER;
+	buttonAny = EV3_KEY_UP | EV3_KEY_DOWN | EV3_KEY_LEFT | EV3_KEY_RIGHT | EV3_KEY_CENTER;
+} tButton;
+
+typedef enum {
 	motorA = (uint8_t)0x1UL,
 	motorB = (uint8_t)0x2UL,
 	motorC = (uint8_t)0x4UL,
@@ -44,6 +54,7 @@ typedef enum {
 
 void init() __attribute__((constructor));
 void uninit() __attribute__((destructor));
+int getButtonPress(tButton button);
 
 /*
  * Display
