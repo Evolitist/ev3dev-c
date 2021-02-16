@@ -16,13 +16,13 @@ extern "C" {
 #endif
 
 typedef enum {
-	buttonNone = 0;
-	buttonUp = EV3_KEY_UP;
-	buttonDown = EV3_KEY_DOWN;
-	buttonLeft = EV3_KEY_LEFT;
-	buttonRight = EV3_KEY_RIGHT;
-	buttonEnter = EV3_KEY_CENTER;
-	buttonAny = EV3_KEY_UP | EV3_KEY_DOWN | EV3_KEY_LEFT | EV3_KEY_RIGHT | EV3_KEY_CENTER;
+	buttonNone = 0,
+	buttonUp = EV3_KEY_UP,
+	buttonDown = EV3_KEY_DOWN,
+	buttonLeft = EV3_KEY_LEFT,
+	buttonRight = EV3_KEY_RIGHT,
+	buttonEnter = EV3_KEY_CENTER,
+	buttonAny = EV3_KEY_UP | EV3_KEY_DOWN | EV3_KEY_LEFT | EV3_KEY_RIGHT | EV3_KEY_CENTER,
 } tButton;
 
 typedef enum {
